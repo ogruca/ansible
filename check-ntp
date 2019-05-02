@@ -1,0 +1,30 @@
+---
+- name: PLAYBOOK to Check NTP Synchronisation Status on devices 
+  connection: local
+  hosts: all
+#  strategy: debug # this module invokes python like debuggin steps
+  gather_facts: false
+  vars:
+    cli:
+      host: "{{ inventory_hostname }}"
+      username: xxx
+      password: xxx
+
+  tasks:
+    - name: TASK 1 - Log into Devices and run "SHOW NTP STATUS"
+      ignore_errors: False
+      ios_command:
+        commands:
+        - show ntp status
+        provider: "{{ cli }}"
+      register: ios_output
+
+#    - name: TASK 1.5 - Show Variable Output (DEBUG)
+#      debug:
+#        var: ios_output
+
+    - name: TASK 2 - Check for Assertion of Variable
+      assert:
+        that:
+          - "'Clock is synchronized' in ios_output.stdout[0]"
+...
